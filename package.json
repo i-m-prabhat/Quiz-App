@@ -1,0 +1,22 @@
+{
+  "name": "quiz-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "mongoose": "5.10.11",
+    "multer": "latest",
+    "swagger-ui-express": "^4.6.2"
+  }
+}
