@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import cors from "cors"
 import indexRoute from './routes/indexRoute.js';
 import adminRoute from './routes/adminRoute.js';
 import userRoute from "./routes/userRoute.js";
@@ -20,6 +21,7 @@ app.set('view options', { pretty: true });
 app.use(bodyParser.json())
 app.set('json spaces', 4)
 app.use(express.json());
+app.use(cors("*"))
 
 
 /**

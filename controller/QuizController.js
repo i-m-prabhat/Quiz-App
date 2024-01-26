@@ -110,12 +110,48 @@ const deleteQuizById = async (req, res) =>
 // }
 
 
+// const getRandomQuizzes = async (req, res) =>
+// {
+//     try
+//     {
+//         let totalQuizzes = await Quiz.countDocuments();
+//         console.log(totalQuizzes);
+//         if (totalQuizzes < 10)
+//         {
+//             res.status(404).json({
+//                 message: "Not enough questions in the database to create 5 random questions"
+//             });
+//         } else
+//         {
+//             const skipAmount = Math.floor(Math.random() * totalQuizzes);
+//             console.log("Skip Amount is :", skipAmount);
+//             const quizzesData = await Quiz.find().select("-__v -correctKey").skip(skipAmount).limit(5).lean();
+
+//             // Shuffle the order of options for each quiz
+//             quizzesData.forEach(quiz =>
+//             {
+//                 quiz.options.sort(() => Math.random() - 0.5);
+//             });
+
+//             // Randomize the order of quizzes
+//             quizzesData.sort(() => Math.random() - 0.5);
+
+//             res.status(200).json(quizzesData);
+//         }
+//     } catch (err)
+//     {
+//         res.status(500).json({ error: err.message });
+//     }
+// };
+
+
 const getRandomQuizzes = async (req, res) =>
 {
     try
     {
         let totalQuizzes = await Quiz.countDocuments();
         console.log(totalQuizzes);
+
         if (totalQuizzes < 10)
         {
             res.status(404).json({
@@ -123,18 +159,16 @@ const getRandomQuizzes = async (req, res) =>
             });
         } else
         {
-            const skipAmount = Math.floor(Math.random() * totalQuizzes);
-            console.log("Skip Amount is :", skipAmount);
-            const quizzesData = await Quiz.find().select("-__v -correctKey").skip(skipAmount).limit(5).lean();
+            const quizzesData = await Quiz.aggregate([
+                { $sample: { size: 5 } }, // Randomly select 5 documents
+                { $project: { __v: 0, correctKey: 0 } } // Exclude __v and correctKey fields
+            ]);
 
             // Shuffle the order of options for each quiz
             quizzesData.forEach(quiz =>
             {
                 quiz.options.sort(() => Math.random() - 0.5);
             });
-
-            // Randomize the order of quizzes
-            quizzesData.sort(() => Math.random() - 0.5);
 
             res.status(200).json(quizzesData);
         }
@@ -143,7 +177,6 @@ const getRandomQuizzes = async (req, res) =>
         res.status(500).json({ error: err.message });
     }
 };
-
 
 
 // {
@@ -289,3 +322,36 @@ export
     getRandomQuizzes,
     evaluateUserAnswers
 }
+
+
+// filter
+// const fromDate = new Date('2024-01-01T00:00:00Z'); // Replace with your start date
+// const toDate = new Date('2024-01-31T23:59:59Z'); // Replace with your end date
+
+// const otherMatchCriteria = {
+//     // Add other match criteria here
+//     // Example: { status: 'active', category: 'technology' }
+// };
+
+// const pipeline = [
+//     {
+//         $match: {
+//             createdAt: {
+//                 $gte: fromDate,
+//                 $lte: toDate,
+//             },
+//             ...otherMatchCriteria,
+//         },
+//     },
+//     // Other aggregation stages as needed
+//     // Example: { $project: { _id: 0, name: 1, createdAt: 1 } }
+// ];
+
+// try
+// {
+//     const filteredData = await YourModel.aggregate(pipeline);
+//     res.status(200).json(filteredData);
+// } catch (err)
+// {
+//     res.status(500).json({ error: err.message });
+// }
