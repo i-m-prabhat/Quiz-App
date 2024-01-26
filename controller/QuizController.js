@@ -146,6 +146,139 @@ const getRandomQuizzes = async (req, res) =>
 
 
 
+// {
+//     userAnswers: [
+//         { "id": "65b3bf5d66252031c80b9666", "userAnswer": "B" },
+//         { "id": "65b3bf5d66252031c80b9667", "userAnswer": "C" },
+//         { "id": "65b3bf5d66252031c80b9668", "userAnswer": "A" },
+//         { "id": "65b3bf5d66252031c80b9669", "userAnswer": "D" },
+//         { "id": "65b3bf5d66252031c80b966a", "userAnswer": "B" },
+//     ]
+// }
+
+// const evaluateUserAnswers = async (req, res) =>
+// {
+//     try
+//     {
+//         const userAnswers = req.body.userAnswers; // Array of objects [{ id, userAnswer }]
+
+//         if (!userAnswers || !Array.isArray(userAnswers))
+//         {
+//             return res.status(400).json({ error: 'Invalid request data' });
+//         }
+
+//         const quizIds = userAnswers.map(answer => answer.id);
+//         const quizzes = await Quiz.find({ _id: { $in: quizIds } });
+
+//         if (!quizzes || quizzes.length !== quizIds.length)
+//         {
+//             return res.status(404).json({ error: 'One or more quizzes not found' });
+//         }
+
+//         let score = 0;
+
+//         for (let i = 0; i < quizzes.length; i++)
+//         {
+//             const quiz = quizzes[i];
+//             const userAnswer = userAnswers.find(answer => answer.id === quiz._id.toString());
+
+//             if (!quiz.correctKey || !userAnswer || quiz.correctKey !== userAnswer.userAnswer)
+//             {
+//                 // Incorrect answer
+//                 // You may want to provide more details about the correct answer for each question
+//                 // For simplicity, this example only increments the score for correct answers
+//             } else
+//             {
+//                 // Correct answer
+//                 score++;
+//             }
+//         }
+
+//         res.status(200).json({ score });
+//     } catch (error)
+//     {
+//         res.status(500).json({ error: error.message });
+//     }
+// }
+
+
+// Validate user answers before evaluation
+const validateUserAnswers = async (userAnswers) =>
+{
+    if (!Array.isArray(userAnswers))
+    {
+        throw new Error('Invalid userAnswers format. It should be an array.');
+    }
+
+    for (const answer of userAnswers)
+    {
+        if (!answer || typeof answer !== 'object' || !('id' in answer) || !('userAnswer' in answer))
+        {
+            throw new Error('Invalid answer format. Each answer should have "id" and "userAnswer" properties.');
+        }
+
+        const quiz = await Quiz.findById(answer.id);
+        if (!quiz)
+        {
+            throw new Error(`Quiz with ID ${answer.id} not found.`);
+        }
+
+        const validOptions = quiz.options.map(option => option.key);
+        if (!validOptions.includes(answer.userAnswer))
+        {
+            throw new Error(`Invalid userAnswer "${answer.userAnswer}" for quiz with ID ${answer.id}.`);
+        }
+    }
+};
+
+
+
+const evaluateUserAnswers = async (req, res) =>
+{
+    try
+    {
+        const userAnswers = req.body.userAnswers; // Array of objects [{ id, userAnswer }]
+
+        await validateUserAnswers(userAnswers);
+        // res.status(200).json({ message: 'Validation successful' });
+
+        const quizIds = userAnswers.map(answer => answer.id);
+        const quizzes = await Quiz.find({ _id: { $in: quizIds } });
+
+        if (!quizzes || quizzes.length !== quizIds.length)
+        {
+            return res.status(404).json({ error: 'One or more quizzes not found' });
+        }
+
+        let score = 0;
+
+        for (let i = 0; i < quizzes.length; i++)
+        {
+            const quiz = quizzes[i];
+            const userAnswer = userAnswers.find(answer => answer.id === quiz._id.toString());
+
+            if (!quiz.correctKey || !userAnswer || quiz.correctKey !== userAnswer.userAnswer)
+            {
+                // Incorrect answer
+                // You may want to provide more details about the correct answer for each question
+                // For simplicity, this example only increments the score for correct answers
+            } else
+            {
+                // Correct answer
+                score++;
+            }
+        }
+
+        res.status(200).json({ score });
+
+    } catch (error)
+    {
+        res.status(400).json({ error: error.message });
+    }
+}
+
+
+
 export
 {
     createQuiz,
@@ -153,5 +286,6 @@ export
     getQuizById,
     updateQuizById,
     deleteQuizById,
-    getRandomQuizzes
+    getRandomQuizzes,
+    evaluateUserAnswers
 }
