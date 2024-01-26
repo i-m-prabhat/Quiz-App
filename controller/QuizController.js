@@ -79,11 +79,79 @@ const deleteQuizById = async (req, res) =>
     }
 };
 
+// get 5 random quiz 
+// const getRandomQuizzes = async (req, res) =>
+// {
+//     try
+//     {
+//         let totalQuizzes = await Quiz.countDocuments();
+//         console.log(totalQuizzes);
+//         if (totalQuizzes < 10)
+//         {
+//             res.status(404).json({
+//                 message: "Not enough questions in the database to create 5 random questions"
+//             })
+//         } else
+//         {
+//             const skipAmount = Math.floor(Math.random() * totalQuizzes);
+//             console.log("Skip Amount is :", skipAmount);
+//             // const quizzesData = await Quiz.find().sort(() => .5 - Math.random()).skip(skipAmount).limit(5);
+//             const quizzesData = await Quiz.find().select("-__v -correctKey").skip(skipAmount).limit(5).lean();
+
+//             // Randomize the order of quizzes
+//             quizzesData.sort(() => Math.random() - 0.5);
+
+//             res.status(200).json(quizzesData);
+//         };
+//     } catch (err)
+//     {
+//         res.status(500).json({ error: err.message });
+//     };
+// }
+
+
+const getRandomQuizzes = async (req, res) =>
+{
+    try
+    {
+        let totalQuizzes = await Quiz.countDocuments();
+        console.log(totalQuizzes);
+        if (totalQuizzes < 10)
+        {
+            res.status(404).json({
+                message: "Not enough questions in the database to create 5 random questions"
+            });
+        } else
+        {
+            const skipAmount = Math.floor(Math.random() * totalQuizzes);
+            console.log("Skip Amount is :", skipAmount);
+            const quizzesData = await Quiz.find().select("-__v -correctKey").skip(skipAmount).limit(5).lean();
+
+            // Shuffle the order of options for each quiz
+            quizzesData.forEach(quiz =>
+            {
+                quiz.options.sort(() => Math.random() - 0.5);
+            });
+
+            // Randomize the order of quizzes
+            quizzesData.sort(() => Math.random() - 0.5);
+
+            res.status(200).json(quizzesData);
+        }
+    } catch (err)
+    {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+
 export
 {
     createQuiz,
     getAllQuiz,
     getQuizById,
     updateQuizById,
-    deleteQuizById
+    deleteQuizById,
+    getRandomQuizzes
 }
