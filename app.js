@@ -31,6 +31,7 @@ app.use('/admin', adminRoute);
 app.use('/user', userRoute);
 app.use('*', (req, res) =>
 {
+   console.log(req.method)
    let fullUrl = req.protocol + "://" + req.get('host') + req.originalUrl
    res.status(404).json({
       code: 404,
@@ -38,7 +39,7 @@ app.use('*', (req, res) =>
       message: "Endpoint " + req.originalUrl + " does not exist, please check /api docs",
       data: {
          fullUrl: fullUrl,
-         method: "GET",
+         method: req.method,
          endPoint: req.originalUrl,
          code: req.code,
          isSecure: (req.protocol == 'http') ? "false" : "true",
