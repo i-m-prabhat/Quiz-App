@@ -1,4 +1,5 @@
-const roleModel = require("../model/Role");
+import { roleModel } from "../model/Role.js"
+
 const UserController = {
     default: async (req, res) =>
     {
@@ -69,4 +70,5 @@ const UserController = {
     }
 }
 
-module.exports = UserController
+
+export default UserController;

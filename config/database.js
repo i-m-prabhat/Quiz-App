@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const quizDb = () =>
 {
@@ -11,4 +11,4 @@ const quizDb = () =>
     })
 }
 
-module.exports = quizDb;
+export default quizDb;

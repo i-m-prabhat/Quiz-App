@@ -1,11 +1,12 @@
-require("dotenv").config();
-const http = require('http');
-const app = require('./app');
-const quizDb = require("./config/database")
-const mongoose = require("mongoose");
+import dotenv from 'dotenv';
+dotenv.config();
+import http from 'http';
+import app from "./app.js";
+import quizDb from "./config/database.js"
+import mongoose from "mongoose";
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
-const config = require("./config/config.json")
+import config from "./config/config.js"
 const connectionURL = process.env.DB_URL || config.database.mongodb.local
 
 

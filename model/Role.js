@@ -1,9 +1,11 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const schema = new mongoose.Schema({ name: String, created_by: String },
+const schema = new mongoose.Schema(
+    {
+        name: String,
+        created_by: String
+    },
     { versionKey: false }
 )
 
-roleModel = new mongoose.model("roles", schema)
-
-module.exports = roleModel
+export const roleModel = new mongoose.model("roles", schema);

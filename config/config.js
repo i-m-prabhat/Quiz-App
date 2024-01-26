@@ -1,4 +1,4 @@
-{
+const config = {
     "database": {
         "oracle": {},
         "mysql": {},
@@ -13,3 +13,5 @@
         }
     }
 }
+
+export default config;

@@ -1,4 +1,4 @@
-{
+const swagger = {
     "swagger": "2.0",
     "info": {
         "description": "This is Api Documentation of Quiz Project.",
@@ -1052,3 +1052,5 @@
         "url": "http://swagger.io"
     }
 }
+
+export default swagger;

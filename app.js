@@ -1,14 +1,12 @@
-const express = require('express');
-
-const bodyParser = require('body-parser');
-
-const indexRoute = require('./routes/indexRoute');
-const adminRoute = require('./routes/adminRoute');
-const userRoute = require("./routes/userRoute")
+import express from 'express';
+import bodyParser from 'body-parser';
+import indexRoute from './routes/indexRoute.js';
+import adminRoute from './routes/adminRoute.js';
+import userRoute from "./routes/userRoute.js";
 const app = express();
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
+import swaggerUi from 'swagger-ui-express';
+import swaggerDocument from './swagger.js';
 
 
 // app.use(bodyParser.urlencoded({ extended: false }));
@@ -49,4 +47,4 @@ app.use('*', (req, res) =>
    });
 })
 
-module.exports = app;
+export default app;
